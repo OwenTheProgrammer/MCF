@@ -5,4 +5,6 @@
 
 _mcfDataBuffer _mcf_encode_header(_mcfHeader* const header);
 
+_mcfDataBuffer _mcf_encode_block(_mcfBlock* const block);
+
 _mcfDataBuffer _mcf_encode_model(_mcfModel* const model);

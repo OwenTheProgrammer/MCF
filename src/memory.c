@@ -24,12 +24,16 @@ mcfErrorType _mcf_data_buffer_set(_mcfDataBuffer* _MCF_RESTRICT const dst, size_
         return MCF_ERROR_NULL_TYPE;
     }
 
+    size_t domain_size = dst_offset + src_size;
     if(dst->memory == NULL) {
-        MCF_ERROR(MCF_ERROR_TYPE_UNINITIALIZED, "Please initialize the destination first");
-        return MCF_ERROR_TYPE_UNINITIALIZED;
+        *dst = _mcf_create_data_buffer(domain_size, NULL);
+        memset(dst->memory, 0, dst_offset);
+        memcpy(dst->memory + dst_offset, src, src_size);
+        dst->used_space = domain_size;
+        //MCF_ERROR(MCF_ERROR_TYPE_UNINITIALIZED, "Please initialize the destination first");
+        //return MCF_ERROR_TYPE_UNINITIALIZED;
     }
 
-    size_t domain_size = dst_offset + src_size;
 
     //Resize or error out
     if(domain_size > dst->size) {

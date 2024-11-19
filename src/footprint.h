@@ -8,7 +8,7 @@
  * @param layout The layout in question
  * @return The size of the layout in bytes
  */
-size_t _mcf_get_layout_size(mcfBufferLayout layout);
+size_t _mcf_get_buffer_layout_footprint(mcfBufferLayout layout);
 
 /*!
  * @brief Calculates the storage footprint of a model header in bytes
@@ -16,3 +16,5 @@ size_t _mcf_get_layout_size(mcfBufferLayout layout);
  * @return The size of the stored header in bytes
  */
 size_t _mcf_get_header_footprint(_mcfHeader header);
+
+size_t _mcf_get_block_footprint(_mcfBlock block);

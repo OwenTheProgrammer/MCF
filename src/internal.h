@@ -42,16 +42,6 @@ struct _mcfHeader {
     uint32_t* block_offsets;
 };
 
-struct _mcfBlock {
-
-};
-
-struct _mcfModel {
-    _mcfHeader header;
-
-    _mcfBlock* block_list;
-};
-
 /* A managed block of memory */
 struct _mcfDataBuffer {
     /* Size of the allocated buffer in bytes */
@@ -62,6 +52,26 @@ struct _mcfDataBuffer {
 
     /* Internal allocated buffer */
     char* memory;
+};
+
+struct _mcfBlock {
+    /* The type of this block */
+    uint32_t type;
+
+    /* The buffer layout information */
+    mcfBufferLayout buffer_layout;
+
+    /* The block data buffer */
+    _mcfDataBuffer buffer;
+};
+
+/* Defines an MCF models data */
+struct _mcfModel {
+    /* The header section of the model */
+    _mcfHeader header;
+
+    /* The list of blocks this model contains */
+    _mcfBlock* block_list;
 };
 
 void _mcf_log(const char* func, const char* format, ...);

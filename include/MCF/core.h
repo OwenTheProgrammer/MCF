@@ -1,5 +1,5 @@
-#ifndef __MCF_CORE_H__
-#define __MCF_CORE_H__
+#ifndef _MCF_CORE_H_
+#define _MCF_CORE_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,13 +86,13 @@ struct mcfAllocator {
 /* Defines the memory layout of an MCF buffer */
 struct mcfBufferLayout {
 	/* Amount of elements in the array */
-	unsigned int element_count;
+	uint32_t element_count;
 
 	/* Amount of components each array element has */
-	unsigned int component_count;
+	uint32_t component_count;
 
 	/* Size of each component in bytes */
-	unsigned int component_stride;
+	uint32_t component_stride;
 };
 
 /*!
@@ -108,12 +108,21 @@ MCFAPI void mcf_set_error_handler(mcfErrorFunc pfun);
  */
 MCFAPI void mcf_set_allocation_handlers(mcfAllocator allocators);
 
+
 /*!
  * @brief Creates a new MCF model
  * @param block_count The amount of blocks to initialize the model with
  * @return The created model
  */
 MCFAPI mcfModel* mcf_create_model(uint32_t block_count);
+
+MCFAPI mcfBlock* mcf_create_block(uint32_t block_type, mcfBufferLayout buffer_layout, void* const src_buffer);
+
+MCFAPI mcfErrorType mcf_block_set_data(mcfBlock* const block, size_t dst_offset, void* const src, size_t src_size);
+
+MCFAPI void* mcf_block_get_data(mcfBlock* const block, size_t index);
+
+MCFAPI uint32_t mcf_model_add_block(mcfModel* const model, mcfBlock* const block);
 
 /*!
  * @brief Exports an MCF model to a file
@@ -130,8 +139,14 @@ MCFAPI mcfErrorType mcf_export_model(mcfModel* const model, const char* file_pat
  */
 MCFAPI void mcf_free_model(mcfModel* const model);
 
+/*!
+ * @brief Disposes of an MCF block
+ * @param block The block to dispose
+ */
+MCFAPI void mcf_free_block(mcfBlock* const block);
+
 #ifdef __cplusplus
 }
 #endif //__cplusplus
 
-#endif //__MCF_CORE_H__
+#endif //_MCF_CORE_H_
