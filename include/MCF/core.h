@@ -10,20 +10,21 @@ extern "C" {
 
 #define MCFAPI
 
-#define MCF_OK		0
-#define MCF_FAIL	1
-
-typedef enum mcfBool {
-	MCF_FALSE = 0,
-	MCF_TRUE = 1
-} mcfBool;
+#define MCF_FALSE	0
+#define MCF_TRUE	1
 
 typedef enum mcfErrorType {
-	MCF_ERROR_NONE = 0,
+	MCF_OK = 0,
 	MCF_ERROR_INVALID_ARG,
 	MCF_ERROR_OUT_OF_MEMORY,
+	MCF_ERROR_NULL_TYPE,
+	MCF_ERROR_TYPE_UNINITIALIZED,
+	ECF_ERROR_BUFFER_OVERFLOW,
 	MCF_ERROR_TYPE_MAX
 } mcfErrorType;
+
+typedef int mcfBool;
+typedef int mcfResult;
 
 typedef struct mcfAllocator		mcfAllocator;
 

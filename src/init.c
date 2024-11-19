@@ -81,7 +81,9 @@ void* _mcf_calloc(size_t count, size_t stride) {
             return NULL;
         }
     }
-    return NULL;
+    else {
+       return NULL;
+    }
 }
 
 void* _mcf_realloc(void* mem, size_t new_size) {
@@ -127,5 +129,8 @@ MCFAPI void mcf_set_allocation_handlers(mcfAllocator allocators) {
 const char* _MCF_ERROR_TABLE[MCF_ERROR_TYPE_MAX] = {
     "NONE: No error was presented",
     "INVALID_ARG: One or more arguments were invalid",
-    "OUT_OF_MEMORY: Memory allocation failed"
+    "OUT_OF_MEMORY: Memory allocation failed",
+    "NULL_TYPE: One or more types were null",
+    "TYPE_UNINITIALIZED: One or more types were not initialized",
+    "OVERFLOW: A buffer allocation or range was overflown"
 };
