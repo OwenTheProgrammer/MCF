@@ -18,3 +18,5 @@ size_t _mcf_get_buffer_layout_footprint(mcfBufferLayout layout);
 size_t _mcf_get_header_footprint(_mcfHeader header);
 
 size_t _mcf_get_block_footprint(_mcfBlock block);
+
+size_t _mcf_get_component_type_footprint(mcfComponentType type);

@@ -14,8 +14,8 @@ _mcfHeader _mcf_create_header(size_t block_count) {
 }
 
 size_t _mcf_get_buffer_layout_index(mcfBufferLayout buffer_layout, size_t element_index) {
-    size_t offset = buffer_layout.component_count * buffer_layout.component_stride;
-    return element_index * offset;
+    size_t stride = _mcf_get_component_type_footprint(buffer_layout.component_type);
+    return (buffer_layout.component_count * stride) * element_index; 
 }
 
 uint32_t _mcf_header_add_block(_mcfHeader* const header) {    

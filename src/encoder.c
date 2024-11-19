@@ -15,6 +15,11 @@
 	_encode_buf.used_space += sizeof(_param);							\
 	_encode_ptr += sizeof(_param);
 
+#define ENCODE_PARAM_AS(_param, _type)											\
+	memcpy(_encode_buf.memory + _encode_ptr, (_type*)&_param, sizeof(_type));	\
+	_encode_buf.used_space += sizeof(_type);									\
+	_encode_ptr += sizeof(_type);
+
 #define ENCODE_ARRAY(_array, _count)														\
 	_mcf_data_buffer_append(&_encode_buf, _array, (_count) * sizeof(*_array), MCF_TRUE);	\
 	_encode_ptr += (_count) * sizeof(*_array);
@@ -45,7 +50,7 @@ _mcfDataBuffer _mcf_encode_block(_mcfBlock* const block) {
 	ENCODE_PARAM(block->type)
 	ENCODE_PARAM(block->buffer_layout.element_count)
 	ENCODE_PARAM(block->buffer_layout.component_count)
-	ENCODE_PARAM(block->buffer_layout.component_stride)
+	ENCODE_PARAM_AS(block->buffer_layout.component_type, uint32_t)
 	ENCODE_ARRAY(block->buffer.memory, block->buffer.size)
 
 	return ENCODE_END()
@@ -54,21 +59,17 @@ _mcfDataBuffer _mcf_encode_block(_mcfBlock* const block) {
 _mcfDataBuffer _mcf_encode_model(_mcfModel* const model) {
 	MCF_LOG("Encoding model");
 
-	size_t header_size = _mcf_get_header_footprint(model->header);
-	
 	_mcfDataBuffer encode_buffer = _mcf_create_data_buffer(0, NULL);
 	for(uint32_t i = 0; i < model->header.block_count; i++) {
-		model->header.block_offsets[i] = encode_buffer.used_space + header_size;
+		model->header.block_offsets[i] = encode_buffer.used_space;
 
 		_mcfDataBuffer block_enc = _mcf_encode_block(&model->block_list[i]);
-		_mcf_data_buffer_append(&encode_buffer, block_enc.memory, block_enc.used_space, MCF_TRUE);
-		_mcf_free_data_buffer(&block_enc);
+		_mcf_data_buffer_extend(&encode_buffer, &block_enc, MCF_TRUE, MCF_TRUE);
 	}
 
 	_mcfDataBuffer final_buffer = _mcf_encode_header(&model->header);
-	_mcf_data_buffer_append(&final_buffer, encode_buffer.memory, encode_buffer.used_space, MCF_TRUE);
-	_mcf_free_data_buffer(&encode_buffer);
-
+	_mcf_data_buffer_extend(&final_buffer, &encode_buffer, MCF_TRUE, MCF_TRUE);
+	
 	return final_buffer;
 }
 

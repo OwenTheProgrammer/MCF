@@ -70,6 +70,13 @@ mcfErrorType _mcf_data_buffer_append(_mcfDataBuffer* _MCF_RESTRICT const dst, vo
     return _mcf_data_buffer_set(dst, dst->used_space, src, src_size, can_resize);
 }
 
+mcfErrorType _mcf_data_buffer_extend(_mcfDataBuffer* _MCF_RESTRICT const dst, _mcfDataBuffer* _MCF_RESTRICT const src, mcfBool can_resize, mcfBool consume_src) {
+    mcfErrorType _err = _mcf_data_buffer_append(dst, src->memory, src->used_space, can_resize);
+    if(consume_src)
+        _mcf_free_data_buffer(src);
+    return _err;
+}
+
 void* _mcf_data_buffer_get(_mcfDataBuffer* const buffer, size_t offset) {
     if(buffer->memory == NULL) {
         MCF_ERROR(MCF_ERROR_TYPE_UNINITIALIZED, "Buffer was uninitialized");

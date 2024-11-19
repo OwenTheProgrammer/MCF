@@ -134,6 +134,8 @@ mcfErrorType _mcf_data_buffer_set(_mcfDataBuffer* _MCF_RESTRICT const dst, size_
  */
 mcfErrorType _mcf_data_buffer_append(_mcfDataBuffer* _MCF_RESTRICT const dst, void* _MCF_RESTRICT const src, size_t src_size, mcfBool can_resize);
 
+mcfErrorType _mcf_data_buffer_extend(_mcfDataBuffer* _MCF_RESTRICT const dst, _mcfDataBuffer* _MCF_RESTRICT const src, mcfBool can_resize, mcfBool consume_src);
+
 /*!
  * @brief Get memory from a data buffer at an offset
  * @param buffer The data buffer to get data from

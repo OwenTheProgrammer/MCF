@@ -24,6 +24,21 @@ typedef enum mcfErrorType {
 	MCF_ERROR_TYPE_MAX
 } mcfErrorType;
 
+typedef enum mcfComponentType {
+	MCF_COMPONENT_TYPE_CHAR,
+	MCF_COMPONENT_TYPE_U8,
+	MCF_COMPONENT_TYPE_U16,
+	MCF_COMPONENT_TYPE_U32,
+	MCF_COMPONENT_TYPE_U64,
+	MCF_COMPONENT_TYPE_I8,
+	MCF_COMPONENT_TYPE_I16,
+	MCF_COMPONENT_TYPE_I32,
+	MCF_COMPONENT_TYPE_I64,
+	MCF_COMPONENT_TYPE_FLOAT,
+	MCF_COMPONENT_TYPE_DOUBLE,
+	MCF_COMPONENT_TYPE_MAX
+} mcfComponentType;
+
 typedef int mcfBool;
 typedef int mcfResult;
 
@@ -91,8 +106,8 @@ struct mcfBufferLayout {
 	/* Amount of components each array element has */
 	uint32_t component_count;
 
-	/* Size of each component in bytes */
-	uint32_t component_stride;
+	/* The type of each component */
+	mcfComponentType component_type;
 };
 
 /*!
