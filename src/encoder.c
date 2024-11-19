@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include "footprint.h"
 
 #define ENCODE_BEGIN(_size)												\
 	_mcfDataBuffer _encode_buf = _mcf_create_data_buffer(_size, NULL);	\
@@ -11,42 +12,18 @@
 
 #define ENCODE_PARAM(_param)											\
 	memcpy(_encode_buf.memory + _encode_ptr, &_param, sizeof(_param));	\
+	_encode_buf.used_space += sizeof(_param);							\
 	_encode_ptr += sizeof(_param);
+
+#define ENCODE_ARRAY(_array, _count)														\
+	_mcf_data_buffer_append(&_encode_buf, _array, (_count) * sizeof(*_array), MCF_TRUE);	\
+	_encode_ptr += (_count) * sizeof(*_array);
 
 #define ENCODE_END() _encode_buf;
 
-static size_t __get_header_footprint(_mcfHeader header) {
-	size_t total = 0;
-	total += sizeof(header.file_id);
-	total += sizeof(header.file_version);
-	total += sizeof(header.uid);
-	total += sizeof(header.block_count);
-	total += header.block_count * sizeof(*header.block_offsets);
-	return total;
-}
-
-_mcfHeader _mcf_alloc_header(size_t block_count) {
-	_mcfHeader header = (_mcfHeader){0};
-
-	header.file_id = _MCF_FILE_ID;
-	header.file_version = _MCF_FILE_VERSION;
-	header.uid = 0;
-	header.block_count = block_count;
-	header.block_offsets = _mcf_calloc(block_count, sizeof(*header.block_offsets));
-
-	return header;
-}
-
-void _mcf_free_header(_mcfHeader* const header) {
-	if(header) {
-		_mcf_free(header->block_offsets);
-		*header = (_mcfHeader){0};
-	}
-}
-
 _mcfDataBuffer _mcf_encode_header(_mcfHeader* const header) {
 	MCF_LOG("Encoding header");
-	size_t header_size = __get_header_footprint(*header);
+	size_t header_size = _mcf_get_header_footprint(*header);
 	
 	ENCODE_BEGIN(header_size)
 
@@ -54,6 +31,32 @@ _mcfDataBuffer _mcf_encode_header(_mcfHeader* const header) {
 	ENCODE_PARAM(header->file_version)
 	ENCODE_PARAM(header->uid)
 	ENCODE_PARAM(header->block_count)
+	ENCODE_ARRAY(header->block_offsets, header->block_count)
 
 	return ENCODE_END()
+}
+
+_mcfDataBuffer _mcf_encode_model(_mcfModel* const model) {
+	MCF_LOG("Encoding model");
+
+	_mcfDataBuffer header_enc = _mcf_encode_header(&model->header);
+
+	return header_enc;
+}
+
+MCFAPI mcfErrorType mcf_export_model(mcfModel* const model, const char* file_path) {
+	if(model == NULL) {
+		MCF_ERROR(MCF_ERROR_NULL_TYPE, "Model can not be null");
+		return MCF_ERROR_NULL_TYPE;
+	}
+
+	_mcfModel* _model = (_mcfModel*)model;
+
+	_mcfDataBuffer header_enc = _mcf_encode_header(&_model->header);
+
+	mcfErrorType _err = _mcf_file_write(&header_enc, file_path);
+	
+	_mcf_free_data_buffer(&header_enc);
+
+	return _err;
 }

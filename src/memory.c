@@ -119,8 +119,3 @@ void _mcf_free_data_buffer(_mcfDataBuffer* const buffer) {
         *buffer = (_mcfDataBuffer){0};
     }
 }
-
-size_t _mcf_get_layout_size(mcfBufferLayout layout) {
-    size_t element_size = layout.component_count * layout.component_stride;
-    return element_size * layout.element_count;
-}

@@ -161,5 +161,3 @@ _mcfDataBuffer _mcf_file_read(const char* file_path);
  * @return `MCF_OK` on success and the error code when something fails
  */
 mcfErrorType _mcf_file_write(_mcfDataBuffer* const buffer, const char* file_path);
-
-size_t _mcf_get_layout_size(mcfBufferLayout layout);

@@ -108,6 +108,28 @@ MCFAPI void mcf_set_error_handler(mcfErrorFunc pfun);
  */
 MCFAPI void mcf_set_allocation_handlers(mcfAllocator allocators);
 
+/*!
+ * @brief Creates a new MCF model
+ * @param block_count The amount of blocks to initialize the model with
+ * @return The created model
+ */
+MCFAPI mcfModel* mcf_create_model(uint32_t block_count);
+
+/*!
+ * @brief Exports an MCF model to a file
+ * @param model The model to export
+ * @param file_path The destination file name
+ * @return `MCF_OK` on success, the error code on failure
+ * @note For the time being, `file_path` has to include the extension
+ */
+MCFAPI mcfErrorType mcf_export_model(mcfModel* const model, const char* file_path);
+
+/*!
+ * @brief Disposes of an MCF model
+ * @param model The model to dispose
+ */
+MCFAPI void mcf_free_model(mcfModel* const model);
+
 #ifdef __cplusplus
 }
 #endif //__cplusplus
