@@ -28,6 +28,10 @@ typedef int mcfBool;
 typedef int mcfResult;
 
 typedef struct mcfAllocator		mcfAllocator;
+typedef struct mcfBufferLayout	mcfBufferLayout;
+
+typedef struct mcfBlock		mcfBlock;
+typedef struct mcfModel		mcfModel;
 
 /*!
  * @brief Error handler callback function pointer
@@ -77,6 +81,18 @@ struct mcfAllocator {
 
 	/* User defined data to be passed through each memory management callback on all invocations */
 	void* user;
+};
+
+/* Defines the memory layout of an MCF buffer */
+struct mcfBufferLayout {
+	/* Amount of elements in the array */
+	unsigned int element_count;
+
+	/* Amount of components each array element has */
+	unsigned int component_count;
+
+	/* Size of each component in bytes */
+	unsigned int component_stride;
 };
 
 /*!

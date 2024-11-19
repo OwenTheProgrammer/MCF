@@ -69,12 +69,12 @@ mcfErrorType _mcf_data_buffer_append(_mcfDataBuffer* _MCF_RESTRICT const dst, vo
 void* _mcf_data_buffer_get(_mcfDataBuffer* const buffer, size_t offset) {
     if(buffer->memory == NULL) {
         MCF_ERROR(MCF_ERROR_TYPE_UNINITIALIZED, "Buffer was uninitialized");
-        return MCF_ERROR_TYPE_UNINITIALIZED;
+        return NULL;
     }
 
     if(offset >= buffer->size) {
         MCF_ERROR(MCF_ERROR_OVERFLOW, "Offset %zu of buffer<%zu B> is out of range", offset, buffer->size);
-        return MCF_ERROR_OVERFLOW;
+        return NULL;
     }
 
     return (void*)&buffer->memory[offset];
@@ -118,4 +118,9 @@ void _mcf_free_data_buffer(_mcfDataBuffer* const buffer) {
         _mcf_free(buffer->memory);
         *buffer = (_mcfDataBuffer){0};
     }
+}
+
+size_t _mcf_get_layout_size(mcfBufferLayout layout) {
+    size_t element_size = layout.component_count * layout.component_stride;
+    return element_size * layout.element_count;
 }

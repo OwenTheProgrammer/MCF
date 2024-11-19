@@ -19,6 +19,9 @@ extern mcfAllocator _mcf_allocator;
 extern const char* _MCF_ERROR_TABLE[MCF_ERROR_TYPE_MAX];
 
 typedef struct _mcfHeader       _mcfHeader;
+typedef struct _mcfBlock        _mcfBlock;
+typedef struct _mcfModel        _mcfModel;
+
 typedef struct _mcfDataBuffer   _mcfDataBuffer;
 
 /* MCF file header preamble */
@@ -37,6 +40,16 @@ struct _mcfHeader {
 
     /* Array of each blocks byte offset from the start of the file */
     uint32_t* block_offsets;
+};
+
+struct _mcfBlock {
+
+};
+
+struct _mcfModel {
+    _mcfHeader header;
+
+    _mcfBlock* block_list;
 };
 
 /* A managed block of memory */
@@ -148,3 +161,5 @@ _mcfDataBuffer _mcf_file_read(const char* file_path);
  * @return `MCF_OK` on success and the error code when something fails
  */
 mcfErrorType _mcf_file_write(_mcfDataBuffer* const buffer, const char* file_path);
+
+size_t _mcf_get_layout_size(mcfBufferLayout layout);
