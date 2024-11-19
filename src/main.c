@@ -1,4 +1,6 @@
 #include <MCF/core.h>
+#include <MCF/type_ext.h>
+#include <MCF/model_ext.h>
 
 int main() {
     float vertex_data[2*4] = {
@@ -13,21 +15,13 @@ int main() {
         0, 2, 3
     };
 
-    mcfBufferLayout vbuf_layout = (mcfBufferLayout){
-        .element_count=4,
-        .component_count=2,
-        .component_type=MCF_COMPONENT_TYPE_FLOAT
-    };
-    mcfBufferLayout ibuf_layout = (mcfBufferLayout){
-        .element_count=2,
-        .component_count=3,
-        .component_type=MCF_COMPONENT_TYPE_U32
-    };
+    mcfBufferLayout vbuf_layout = MCF_F32_VEC2_LAYOUT(4);
+    mcfBufferLayout ibuf_layout = MCF_U32_VEC3_LAYOUT(2);
 
-    mcfBlock* vertex_block = mcf_create_block(0, vbuf_layout, &vertex_data);
-    mcfBlock* index_block = mcf_create_block(1, ibuf_layout, &index_data);
+    mcfBlock* vertex_block = mcf_create_block(MCF_BLOCK_TYPE_VERTEX, vbuf_layout, &vertex_data);
+    mcfBlock* index_block = mcf_create_block(MCF_BLOCK_TYPE_INDEX, ibuf_layout, &index_data);
 
-    mcfModel* model = mcf_create_model(0);
+    mcfModel* model = mcf_create_model(0, NULL);
 
     mcf_model_add_block(model, vertex_block);
     mcf_model_add_block(model, index_block);

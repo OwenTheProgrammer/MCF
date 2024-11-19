@@ -129,7 +129,7 @@ MCFAPI void mcf_set_allocation_handlers(mcfAllocator allocators);
  * @param block_count The amount of blocks to initialize the model with
  * @return The created model
  */
-MCFAPI mcfModel* mcf_create_model(uint32_t block_count);
+MCFAPI mcfModel* mcf_create_model(uint32_t block_count, mcfBlock* const block_list);
 
 MCFAPI mcfBlock* mcf_create_block(uint32_t block_type, mcfBufferLayout buffer_layout, void* const src_buffer);
 

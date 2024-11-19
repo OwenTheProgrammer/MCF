@@ -32,11 +32,11 @@ void _mcf_free_header(_mcfHeader* const header) {
 	}
 }
 
-MCFAPI mcfModel* mcf_create_model(uint32_t block_count) {
+MCFAPI mcfModel* mcf_create_model(uint32_t block_count, mcfBlock* const block_list) {
     _mcfModel* model = _mcf_calloc(1, sizeof(_mcfModel));
 
     model->header = _mcf_create_header(block_count);
-    model->block_list = NULL;
+    model->block_list = (_mcfBlock*)block_list;
 
     MCF_LOG("Created model");
     return (mcfModel*)model;

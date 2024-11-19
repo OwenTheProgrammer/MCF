@@ -2,3 +2,6 @@
 # GCC build directories
 bin/
 obj/
+
+# Blender python cache
+__pycache__/
