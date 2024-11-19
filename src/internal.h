@@ -96,7 +96,7 @@ _mcfDataBuffer _mcf_create_data_buffer(size_t size, void* data);
  * @param src The source memory to write to the destination
  * @param src_size The size of the source memory in bytes
  * @param can_resize When true, the buffer will resize when an overflow occurs
- * @return `MCF_OK` on success and the error code when something happens
+ * @return `MCF_OK` on success and the error code when something fails
  * @note When `src = NULL` the defined range of `dst` will be zero initialized
  */
 mcfErrorType _mcf_data_buffer_set(_mcfDataBuffer* _MCF_RESTRICT const dst, size_t dst_offset, void* _MCF_RESTRICT const src, size_t src_size, mcfBool can_resize);
@@ -107,7 +107,7 @@ mcfErrorType _mcf_data_buffer_set(_mcfDataBuffer* _MCF_RESTRICT const dst, size_
  * @param src The source memory to append with
  * @param src_size The size of the source in bytes
  * @param can_resize When true, the buffer will resize when an overflow occurs
- * @return `MCF_OK` on success and the error code when something happens
+ * @return `MCF_OK` on success and the error code when something fails
  */
 mcfErrorType _mcf_data_buffer_append(_mcfDataBuffer* _MCF_RESTRICT const dst, void* _MCF_RESTRICT const src, size_t src_size, mcfBool can_resize);
 
@@ -123,7 +123,7 @@ void* _mcf_data_buffer_get(_mcfDataBuffer* const buffer, size_t offset);
  * @brief Resizes an allocated data buffer
  * @param buffer The buffer to reallocate
  * @param new_size The new size of the buffer
- * @return `MCF_OK` on success and the error code when something happens
+ * @return `MCF_OK` on success and the error code when something fails
  */
 mcfErrorType _mcf_data_buffer_resize(_mcfDataBuffer* const buffer, size_t new_size);
 
@@ -133,3 +133,18 @@ mcfErrorType _mcf_data_buffer_resize(_mcfDataBuffer* const buffer, size_t new_si
  * @note `buffer = NULL` will be ignored
  */
 void _mcf_free_data_buffer(_mcfDataBuffer* const buffer);
+
+/*!
+ * @brief Reads the contents of a file into a data buffer
+ * @param file_path The system path of the file
+ * @return The loaded file data or a blank buffer if an error occurs
+ */
+_mcfDataBuffer _mcf_file_read(const char* file_path);
+
+/*!
+ * @brief Write the contents of a data buffer to a file
+ * @param buffer The buffer to export
+ * @param file_path The system path of the file
+ * @return `MCF_OK` on success and the error code when something fails
+ */
+mcfErrorType _mcf_file_write(_mcfDataBuffer* const buffer, const char* file_path);

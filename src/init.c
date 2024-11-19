@@ -132,5 +132,6 @@ const char* _MCF_ERROR_TABLE[MCF_ERROR_TYPE_MAX] = {
     "OUT_OF_MEMORY: Memory allocation failed",
     "NULL_TYPE: One or more types were null",
     "TYPE_UNINITIALIZED: One or more types were not initialized",
-    "OVERFLOW: A buffer allocation or range was overflown"
+    "OVERFLOW: A buffer allocation or range was overflown",
+    "FILE_IO: Failed to open the requested file for read/write"
 };
