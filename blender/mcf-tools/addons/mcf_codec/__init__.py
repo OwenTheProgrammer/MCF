@@ -14,8 +14,10 @@ bl_info = {
 
 if "bpy" in locals():
 	import importlib
+	importlib.reload(mcf)
 	importlib.reload(importer)
 else:
+	from . import mcf
 	from . import importer
 
 import bpy
