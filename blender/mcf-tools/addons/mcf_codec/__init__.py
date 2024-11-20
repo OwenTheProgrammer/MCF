@@ -23,11 +23,11 @@ else:
 import bpy
 
 def menu_import(self, context):
-	self.layout.operator(importer.mcf_importer.bl_idname, text="Import MCF model (.mcf)")
+	self.layout.operator(importer.McfImporter.bl_idname, text="Import MCF model (.mcf)")
 
 
 mcf_classes = [
-	importer.mcf_importer
+	importer.McfImporter
 ]
 
 def register():

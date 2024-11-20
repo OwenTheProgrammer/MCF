@@ -12,10 +12,10 @@ int main() {
 
     int index_data[2*3] = {
         0, 1, 2,
-        0, 2, 3
+        2, 1, 3
     };
 
-    mcfBufferLayout vbuf_layout = MCF_F32_VEC2_LAYOUT(4);
+    mcfBufferLayout vbuf_layout = MCF_FLOAT_VEC2_LAYOUT(4);
     mcfBufferLayout ibuf_layout = MCF_U32_VEC3_LAYOUT(2);
 
     mcfBlock* vertex_block = mcf_create_block(MCF_BLOCK_TYPE_VERTEX, vbuf_layout, &vertex_data);
