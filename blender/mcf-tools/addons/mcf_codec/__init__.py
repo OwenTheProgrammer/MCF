@@ -16,18 +16,23 @@ if "bpy" in locals():
 	import importlib
 	importlib.reload(mcf)
 	importlib.reload(importer)
+	importlib.reload(exporter)
 else:
 	from . import mcf
 	from . import importer
+	from . import exporter
 
 import bpy
 
 def menu_import(self, context):
 	self.layout.operator(importer.McfImporter.bl_idname, text="Import MCF model (.mcf)")
 
+def menu_export(self, context):
+	self.layout.operator(exporter.McfExporter.bl_idname, text="Export MCF model (.mcf)")
 
 mcf_classes = [
-	importer.McfImporter
+	importer.McfImporter,
+	exporter.McfExporter
 ]
 
 def register():
@@ -37,6 +42,7 @@ def register():
 		register_class(segment)
 	
 	bpy.types.TOPBAR_MT_file_import.append(menu_import)
+	bpy.types.TOPBAR_MT_file_export.append(menu_export)
 	print("MCF: Registered.")
 
 def unregister():
@@ -45,6 +51,7 @@ def unregister():
 	for segment in reversed(mcf_classes):
 		unregister_class(segment)
 	
+	bpy.types.TOPBAR_MT_file_export.remove(menu_export)
 	bpy.types.TOPBAR_MT_file_import.remove(menu_import)
 	print("MCF: Unregistered.")
 

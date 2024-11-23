@@ -44,13 +44,12 @@ def stride_padding(length, target):
 	return (target-1) - ((length-1) % target)
 
 class McfHeader:
-	def __init__(self, file_id=MCF_FILE_ID, file_version=MCF_FILE_VERSION, uid=0, block_count=0, block_offsets=[], stored_size=0):
+	def __init__(self, file_id=MCF_FILE_ID, file_version=MCF_FILE_VERSION, uid=0, block_count=0, block_offsets=[]):
 		self.file_id = file_id
 		self.file_version = file_version
 		self.uid = uid
 		self.block_count = block_count
 		self.block_offsets = block_offsets
-		self.stored_size = stored_size
 	
 	@classmethod
 	def from_binary(self, stream):
@@ -69,10 +68,19 @@ class McfHeader:
 		header_size = preamble_size + struct.calcsize('<L') * count
 		offsets = [x + header_size for x in offsets]
 
-		return McfHeader(fid, version, uid, count, offsets, header_size)
+		return McfHeader(fid, version, uid, count, offsets)
+	
+	def serialize(self):
+		buffer = bytearray( struct.pack('<4L', self.file_id, self.file_version, self.uid, self.block_count) )
+		offsets = np.array(self.block_offsets, dtype=np.uint32).flatten()
+		buffer.extend( bytes(memoryview(offsets)) )
+
+		print(f"MCF: Encoded header ({len(buffer)} Bytes)")
+		return buffer
+
 
 class McfBlock:
-	def __init__(self, type=McfBlockType.NONE, elem_count=0, component_count=0, component_type=McfComponentType.CHAR, data=[]):
+	def __init__(self, type=McfBlockType.NONE, elem_count=0, component_count=0, component_type=McfComponentType.CHAR, data=None):
 		self.type = type
 		self.element_count = elem_count
 		self.component_count = component_count
@@ -92,6 +100,47 @@ class McfBlock:
 		preamble_size = struct.calcsize('<4L')
 		buffer_data = struct.unpack_from(f"<{elem_count*cmp_count}{McfComponentTypeCodeTable[cmp_type]}", stream, preamble_size)
 		return McfBlock(block_type, elem_count, cmp_count, cmp_type, buffer_data)
+	
+	@classmethod
+	def create_vertex_block(self, obj):
+
+		vpos = [v.co for v in obj.data.vertices]
+		vpos = np.array(vpos, dtype=np.float32).flatten()
+
+		return McfBlock(
+			type=McfBlockType.VERTEX, 
+			elem_count=vpos.size/3, 
+			component_count=3,
+			component_type=McfComponentType.FLOAT,
+			data=vpos
+		)
+	
+	@classmethod
+	def create_index_block(self, obj):
+		mesh = obj.data
+
+		mesh.calc_loop_triangles()
+
+		tris = [[id for id in t.vertices] for t in mesh.loop_triangles]
+		tris = np.array(tris, dtype=np.uint32).flatten()
+
+		return McfBlock(
+			type=McfBlockType.INDEX,
+			elem_count=tris.size/3,
+			component_count=3,
+			component_type=McfComponentType.U32,
+			data=tris
+		)
+
+	def serialize(self, eopt):
+		if not eopt:
+			return None
+		
+		buffer = bytearray( struct.pack('<4L', int(self.type), int(self.element_count), int(self.component_count), int(self.component_type)) )
+		buffer.extend( bytes(memoryview(self.data)) )
+		
+		print(f"MCF: Encoded block {self.type} ({len(buffer)} Bytes)")
+		return buffer
 
 class McfModel:
 	def __init__(self, name="Untitled MCF Model", block_list: list[McfBlock] = []):
