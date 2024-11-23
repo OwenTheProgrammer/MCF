@@ -135,6 +135,8 @@ MCFAPI mcfBlock* mcf_create_block(uint32_t block_type, mcfBufferLayout buffer_la
 
 MCFAPI mcfErrorType mcf_block_set_data(mcfBlock* const block, size_t dst_offset, void* const src, size_t src_size);
 
+MCFAPI uint32_t mcf_block_get_array_length(mcfBlock* const block);
+
 MCFAPI void* mcf_block_get_data(mcfBlock* const block, size_t index);
 
 MCFAPI uint32_t mcf_model_add_block(mcfModel* const model, mcfBlock* const block);
@@ -147,6 +149,12 @@ MCFAPI uint32_t mcf_model_add_block(mcfModel* const model, mcfBlock* const block
  * @note For the time being, `file_path` has to include the extension
  */
 MCFAPI mcfErrorType mcf_export_model(mcfModel* const model, const char* file_path);
+
+MCFAPI mcfModel* mcf_import_model(const char* file_path);
+
+MCFAPI uint32_t mcf_model_get_block_count(mcfModel* const model);
+
+MCFAPI mcfBlock* mcf_model_get_block(mcfModel* const model, uint32_t index);
 
 /*!
  * @brief Disposes of an MCF model

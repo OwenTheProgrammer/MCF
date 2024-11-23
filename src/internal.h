@@ -5,6 +5,7 @@
 
 #define _MCF_LOG_SIZE 1024
 #define _MCF_RESTRICT __restrict__
+#define _MCF_TYPEOF(x) typeof(x)
 
 /* File magic/identifier code */
 extern const uint32_t _MCF_FILE_ID;

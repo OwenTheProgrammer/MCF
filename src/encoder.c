@@ -1,4 +1,4 @@
-#include "encoder.h"
+#include "codec.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
@@ -26,48 +26,48 @@
 
 #define ENCODE_END() _encode_buf;
 
-_mcfDataBuffer _mcf_encode_header(_mcfHeader* const header) {
+_mcfDataBuffer _mcf_encode_header(_mcfHeader header) {
 	MCF_LOG("Encoding header");
-	size_t header_size = _mcf_get_header_footprint(*header);
+	size_t header_size = _mcf_get_header_footprint(header);
 	
 	ENCODE_BEGIN(header_size)
 
-	ENCODE_PARAM(header->file_id)
-	ENCODE_PARAM(header->file_version)
-	ENCODE_PARAM(header->uid)
-	ENCODE_PARAM(header->block_count)
-	ENCODE_ARRAY(header->block_offsets, header->block_count)
+	ENCODE_PARAM(header.file_id)
+	ENCODE_PARAM(header.file_version)
+	ENCODE_PARAM(header.uid)
+	ENCODE_PARAM(header.block_count)
+	ENCODE_ARRAY(header.block_offsets, header.block_count)
 
 	return ENCODE_END()
 }
 
-_mcfDataBuffer _mcf_encode_block(_mcfBlock* const block) {
+_mcfDataBuffer _mcf_encode_block(_mcfBlock block) {
 	MCF_LOG("Encode block");
-	size_t block_size = _mcf_get_block_footprint(*block);
+	size_t block_size = _mcf_get_block_footprint(block);
 
 	ENCODE_BEGIN(block_size)
 
-	ENCODE_PARAM(block->type)
-	ENCODE_PARAM(block->buffer_layout.element_count)
-	ENCODE_PARAM(block->buffer_layout.component_count)
-	ENCODE_PARAM_AS(block->buffer_layout.component_type, uint32_t)
-	ENCODE_ARRAY(block->buffer.memory, block->buffer.size)
+	ENCODE_PARAM(block.type)
+	ENCODE_PARAM(block.buffer_layout.element_count)
+	ENCODE_PARAM(block.buffer_layout.component_count)
+	ENCODE_PARAM_AS(block.buffer_layout.component_type, uint32_t)
+	ENCODE_ARRAY(block.buffer.memory, block.buffer.size)
 
 	return ENCODE_END()
 }
 
-_mcfDataBuffer _mcf_encode_model(_mcfModel* const model) {
+_mcfDataBuffer _mcf_encode_model(_mcfModel model) {
 	MCF_LOG("Encoding model");
 
 	_mcfDataBuffer encode_buffer = _mcf_create_data_buffer(0, NULL);
-	for(uint32_t i = 0; i < model->header.block_count; i++) {
-		model->header.block_offsets[i] = encode_buffer.used_space;
+	for(uint32_t i = 0; i < model.header.block_count; i++) {
+		model.header.block_offsets[i] = encode_buffer.used_space;
 
-		_mcfDataBuffer block_enc = _mcf_encode_block(&model->block_list[i]);
+		_mcfDataBuffer block_enc = _mcf_encode_block(model.block_list[i]);
 		_mcf_data_buffer_extend(&encode_buffer, &block_enc, MCF_TRUE, MCF_TRUE);
 	}
 
-	_mcfDataBuffer final_buffer = _mcf_encode_header(&model->header);
+	_mcfDataBuffer final_buffer = _mcf_encode_header(model.header);
 	_mcf_data_buffer_extend(&final_buffer, &encode_buffer, MCF_TRUE, MCF_TRUE);
 	
 	return final_buffer;
@@ -79,7 +79,7 @@ MCFAPI mcfErrorType mcf_export_model(mcfModel* const model, const char* file_pat
 		return MCF_ERROR_NULL_TYPE;
 	}
 
-	_mcfModel* _model = (_mcfModel*)model;
+	_mcfModel _model = *(_mcfModel*)model;
 
 	_mcfDataBuffer model_enc = _mcf_encode_model(_model);
 

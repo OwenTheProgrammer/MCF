@@ -117,10 +117,11 @@ class McfModel:
 		
 		block = self.vertex_block
 		data = np.array(block.data, dtype=np.float32)
-
+		
 		# Add zero padding to ensure whatever stride will become all vector3
 		padded = np.pad(data, (0, stride_padding(data.size, block.component_count)))
-		final = np.pad(padded.reshape((-1, block.component_count)), [(0,0),(0,1)])
+		padded = padded.reshape((-1, block.component_count))
+		final = np.pad(padded, [(0,0),(0, (3 - block.component_count))])
 
 		return final.tolist()
 	

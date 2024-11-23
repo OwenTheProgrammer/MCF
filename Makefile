@@ -11,10 +11,10 @@ SRC_DIR = src
 SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-release: CFLAGS += -O3 -Wno-unknown-pragmas -Wno-unused-parameter
+release: CFLAGS += -O3 -Wno-unknown-pragmas
 release: all
 
-debug: CFLAGS += -O0 -ggdb -D MCF_DEBUG -Wno-unknown-pragmas -Wno-unused-parameter
+debug: CFLAGS += -O0 -ggdb -D MCF_DEBUG -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function
 debug: all
 
 all: buildfs | $(BINARY)

@@ -15,7 +15,7 @@ _mcfHeader _mcf_create_header(size_t block_count) {
 
 size_t _mcf_get_buffer_layout_index(mcfBufferLayout buffer_layout, size_t element_index) {
     size_t stride = _mcf_get_component_type_footprint(buffer_layout.component_type);
-    return (buffer_layout.component_count * stride) * element_index; 
+    return stride * element_index; 
 }
 
 uint32_t _mcf_header_add_block(_mcfHeader* const header) {    
@@ -53,6 +53,46 @@ MCFAPI mcfBlock* mcf_create_block(uint32_t block_type, mcfBufferLayout buffer_la
 
     MCF_LOG("Block created");
     return (mcfBlock*)block;
+}
+
+MCFAPI uint32_t mcf_model_get_block_count(mcfModel* const model) {
+    if(model == NULL) {
+        MCF_ERROR(MCF_ERROR_NULL_TYPE, "Model can not be null");
+        return 0;
+    }
+
+    _mcfModel* _model = (_mcfModel*)model;
+    return _model->header.block_count;
+}
+
+MCFAPI mcfBlock* mcf_model_get_block(mcfModel* const model, uint32_t index) {
+    if(model == NULL) {
+        MCF_ERROR(MCF_ERROR_NULL_TYPE, "Model can not be null");
+        return NULL;
+    }
+    
+    _mcfModel* _model = (_mcfModel*)model;
+    
+    if(_model->block_list == NULL) {
+        MCF_ERROR(MCF_ERROR_TYPE_UNINITIALIZED, "Model has no block list");
+        return NULL;
+    }
+    if(index >= _model->header.block_count) {
+        MCF_ERROR(MCF_ERROR_OVERFLOW, "Block index %u is out of range (Model has %u blocks.)", index, _model->header.block_count);
+        return NULL;
+    }
+
+    return (mcfBlock*)&_model->block_list[index];
+}
+
+MCFAPI uint32_t mcf_block_get_array_length(mcfBlock* const block) {
+    if(block == NULL) {
+        MCF_ERROR(MCF_ERROR_NULL_TYPE, "Block can not be null");
+        return 0;
+    }
+
+    _mcfBlock* _block = (_mcfBlock*)block;
+    return _block->buffer_layout.element_count;
 }
 
 MCFAPI mcfErrorType mcf_block_set_data(mcfBlock* const block, size_t dst_offset, void* const src, size_t src_size) {
