@@ -8,10 +8,12 @@ BIN_DIR = bin
 OBJ_DIR = obj
 SRC_DIR = src
 
+BLENDER_DIR = blender/mcf-tools/addons/mcf_codec
+
 SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-release: CFLAGS += -O3 -Wno-unknown-pragmas
+release: CFLAGS += -O3 -Wno-unknown-pragmas -Wno-unused-function -Wno-unused-parameter
 release: all
 
 debug: CFLAGS += -O0 -ggdb -D MCF_DEBUG -Wno-unknown-pragmas -Wno-unused-parameter -Wno-unused-function
@@ -32,4 +34,4 @@ buildfs:
 	mkdir -p $(OBJ_DIR) $(BIN_DIR)
 
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -rf $(OBJ_DIR) $(BIN_DIR) $(BLENDER_DIR)/__pycache__

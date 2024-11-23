@@ -1,5 +1,6 @@
-#include "codec.h"
+#include <MCF/core.h>
 #include "internal.h"
+#include "model.h"
 #include "footprint.h"
 #include <stdint.h>
 #include <stddef.h>
@@ -36,7 +37,7 @@
 	if(_OUTPUT)					\
 		*_OUTPUT = _decode_ptr;
 
-_mcfHeader _mcf_decode_header(char* const stream, size_t* const ptr) {
+static _mcfHeader _mcf_decode_header(char* _MCF_RESTRICT const stream, size_t* _MCF_RESTRICT const ptr) {
 	_mcfHeader result = (_mcfHeader){0};
 
 	DECODE_BEGIN(stream, ptr)
@@ -52,7 +53,7 @@ _mcfHeader _mcf_decode_header(char* const stream, size_t* const ptr) {
 	return result;
 }
 
-_mcfBlock _mcf_decode_block(char* const stream, size_t* const ptr) {
+static _mcfBlock _mcf_decode_block(char* _MCF_RESTRICT const stream, size_t* _MCF_RESTRICT const ptr) {
 	_mcfBlock result = (_mcfBlock){0};
 
 	DECODE_BEGIN(stream, ptr)

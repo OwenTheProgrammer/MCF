@@ -8,10 +8,10 @@ extern "C" {
 #include "core.h"
 
 typedef enum mcfBlockType {
-    MCF_BLOCK_TYPE_NONE = 0,
-    MCF_BLOCK_TYPE_VERTEX,
-    MCF_BLOCK_TYPE_INDEX,
-    MCF_BLOCK_TYPE_MAX
+	MCF_BLOCK_TYPE_NONE = 0,
+	MCF_BLOCK_TYPE_VERTEX,
+	MCF_BLOCK_TYPE_INDEX,
+	MCF_BLOCK_TYPE_MAX
 } mcfBlockType;
 
 #ifdef __cplusplus

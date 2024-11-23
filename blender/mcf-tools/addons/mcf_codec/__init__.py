@@ -24,10 +24,10 @@ else:
 
 import bpy
 
-def menu_import(self, context):
+def menu_import(self, ctx):
 	self.layout.operator(importer.McfImporter.bl_idname, text="Import MCF model (.mcf)")
 
-def menu_export(self, context):
+def menu_export(self, ctx):
 	self.layout.operator(exporter.McfExporter.bl_idname, text="Export MCF model (.mcf)")
 
 mcf_classes = [

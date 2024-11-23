@@ -103,10 +103,10 @@ struct mcfBufferLayout {
 	/* Amount of elements in the array */
 	uint32_t element_count;
 
-	/* Amount of components each array element has */
+	/* Amount of components each element has */
 	uint32_t component_count;
 
-	/* The type of each component */
+	/* The type of an elements components */
 	mcfComponentType component_type;
 };
 
@@ -123,6 +123,7 @@ MCFAPI void mcf_set_error_handler(mcfErrorFunc pfun);
  */
 MCFAPI void mcf_set_allocation_handlers(mcfAllocator allocators);
 
+/* === MODEL FUNCTIONS === */
 
 /*!
  * @brief Creates a new MCF model
@@ -131,15 +132,38 @@ MCFAPI void mcf_set_allocation_handlers(mcfAllocator allocators);
  */
 MCFAPI mcfModel* mcf_create_model(uint32_t block_count, mcfBlock* const block_list);
 
-MCFAPI mcfBlock* mcf_create_block(uint32_t block_type, mcfBufferLayout buffer_layout, void* const src_buffer);
-
-MCFAPI mcfErrorType mcf_block_set_data(mcfBlock* const block, size_t dst_offset, void* const src, size_t src_size);
-
-MCFAPI uint32_t mcf_block_get_array_length(mcfBlock* const block);
-
-MCFAPI void* mcf_block_get_data(mcfBlock* const block, size_t index);
-
+/*!
+ * @brief Adds a block to a models block list
+ * @param model The model to add the block to
+ * @param block The block to add
+ * @return The index of the block in the models block list
+ * @note The block list will extend to accomidate the new block if needed
+ */
 MCFAPI uint32_t mcf_model_add_block(mcfModel* const model, mcfBlock* const block);
+
+/*!
+ * @brief Retrieves a block from a models block list
+ * @param model The model that contains the block
+ * @param index The blocks index in the block list
+ * @return The block at the index, `NULL` if the block was not found
+ * @todo Add better functionality for indexing blocks that exist in a model
+ */
+MCFAPI mcfBlock* mcf_model_get_block(mcfModel* const model, uint32_t index);
+
+/*!
+ * @brief Returns the amount of blocks this model contains
+ * @param model The model to evaluate
+ * @return The amount of blocks in the models block list
+ */
+MCFAPI uint32_t mcf_model_get_block_count(mcfModel* const model);
+
+/*!
+ * @brief Imports an MCF model from a file
+ * @param file_path The system filepath to load
+ * @return The imported model file
+ * @note The file path must contain the extension as well (for the time being)
+ */
+MCFAPI mcfModel* mcf_import_model(const char* file_path);
 
 /*!
  * @brief Exports an MCF model to a file
@@ -150,17 +174,49 @@ MCFAPI uint32_t mcf_model_add_block(mcfModel* const model, mcfBlock* const block
  */
 MCFAPI mcfErrorType mcf_export_model(mcfModel* const model, const char* file_path);
 
-MCFAPI mcfModel* mcf_import_model(const char* file_path);
-
-MCFAPI uint32_t mcf_model_get_block_count(mcfModel* const model);
-
-MCFAPI mcfBlock* mcf_model_get_block(mcfModel* const model, uint32_t index);
-
 /*!
  * @brief Disposes of an MCF model
  * @param model The model to dispose
  */
 MCFAPI void mcf_free_model(mcfModel* const model);
+
+/* === BLOCK FUNCTIONS === */
+
+/*!
+ * @brief Creates a new block of data that holds resources
+ * @param block_type The type of the block, defined using extensions or by you
+ * @param buffer_layout The way the data is laid out within the buffer
+ * @param src_buffer The source buffer data if available
+ * @note `src_buffer` may be `NULL`
+ * @return The newly created block
+ */
+MCFAPI mcfBlock* mcf_create_block(uint32_t block_type, mcfBufferLayout buffer_layout, void* const src_buffer);
+
+/*!
+ * @brief Sets a range of a blocks data
+ * @param block The block that gets the data
+ * @param dst_offset An offset from the destinations base pointer in bytes
+ * @param src The source data buffer
+ * @param src_size The size of the source in bytes
+ * @return `MCF_OK` on success and the error code when something happens
+ * @note When `src = NULL` the range will be set with zeros
+ */
+MCFAPI mcfErrorType mcf_block_set_data(mcfBlock* const block, size_t dst_offset, void* const src, size_t src_size);
+
+/*!
+ * @brief Calculates a pointer to the memory address of a blocks element
+ * @param block The block to index into
+ * @param index The index of the array element
+ * @return The address of the element at the given index
+ */
+MCFAPI void* mcf_block_get_data(mcfBlock* const block, size_t index);
+
+/*!
+ * @brief Returns how many elements a block has stored
+ * @param block The block to evaluate
+ * @return The element count
+ */
+MCFAPI uint32_t mcf_block_get_element_count(mcfBlock* const block);
 
 /*!
  * @brief Disposes of an MCF block

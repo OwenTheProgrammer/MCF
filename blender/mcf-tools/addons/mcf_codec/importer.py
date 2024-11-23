@@ -28,10 +28,10 @@ class McfImporter(Operator, ImportHelper):
 			mcf_data = file.read()
 			file.close()
 		
-		# Load the header section
 		try:
+			# Load the header section
 			header = McfHeader.from_binary(mcf_data)
-			print(f"MCF: Loaded {header.block_count} blocks successfully.")
+			print(f"MCF: Loading {header.block_count} blocks..")
 
 			blocks = []
 			for addr in header.block_offsets:
@@ -47,9 +47,13 @@ class McfImporter(Operator, ImportHelper):
 			
 			index_data = model_data.compose_index_buffer()
 			model_data.create_mesh(ctx, vertex_data, index_data)
+			
+			print(f"MCF: Imported {header.block_count} blocks successfully.")
+			self.report({'INFO'}, f"MCF: Imported {header.block_count} blocks")
 		except Exception as e:
 			print(f"MCF: ERROR {e}")
 			self.report({'ERROR'}, f"MCF: ERROR {e}")
+
 			return {'CANCELLED'}
 
 		return {'FINISHED'}

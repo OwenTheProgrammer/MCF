@@ -27,52 +27,52 @@ typedef struct _mcfDataBuffer   _mcfDataBuffer;
 
 /* MCF file header preamble */
 struct _mcfHeader {
-    /* File identification code */
-    uint32_t file_id;
+	/* File identification code */
+	uint32_t file_id;
 
-    /* Version of the file format */
-    uint32_t file_version;
+	/* Version of the file format */
+	uint32_t file_version;
 
-    /* Optional unique asset identifier */
-    uint32_t uid;
+	/* Optional unique asset identifier */
+	uint32_t uid;
 
-    /* Amount of blocks in this file */
-    uint32_t block_count;
+	/* Amount of blocks in this file */
+	uint32_t block_count;
 
-    /* Array of each blocks byte offset from the start of the file */
-    uint32_t* block_offsets;
+	/* Array of each blocks byte offset from the start of the file */
+	uint32_t* block_offsets;
 };
 
 /* A managed block of memory */
 struct _mcfDataBuffer {
-    /* Size of the allocated buffer in bytes */
-    size_t size;
+	/* Size of the allocated buffer in bytes */
+	size_t size;
 
-    /* Amount of bytes used in the buffer */
-    size_t used_space;
+	/* Amount of bytes used in the buffer */
+	size_t used_space;
 
-    /* Internal allocated buffer */
-    char* memory;
+	/* Internal allocated buffer */
+	char* memory;
 };
 
 struct _mcfBlock {
-    /* The type of this block */
-    uint32_t type;
+	/* The type of this block (application specific and defined externally) */
+	uint32_t type;
 
-    /* The buffer layout information */
-    mcfBufferLayout buffer_layout;
+	/* Describes how the block data is stored */
+	mcfBufferLayout buffer_layout;
 
-    /* The block data buffer */
-    _mcfDataBuffer buffer;
+	/* The data of this block */
+	_mcfDataBuffer buffer;
 };
 
 /* Defines an MCF models data */
 struct _mcfModel {
-    /* The header section of the model */
-    _mcfHeader header;
+	/* The header section of the model */
+	_mcfHeader header;
 
-    /* The list of blocks this model contains */
-    _mcfBlock* block_list;
+	/* The list of blocks this model contains */
+	_mcfBlock* block_list;
 };
 
 void _mcf_log(const char* func, const char* format, ...);
@@ -135,6 +135,14 @@ mcfErrorType _mcf_data_buffer_set(_mcfDataBuffer* _MCF_RESTRICT const dst, size_
  */
 mcfErrorType _mcf_data_buffer_append(_mcfDataBuffer* _MCF_RESTRICT const dst, void* _MCF_RESTRICT const src, size_t src_size, mcfBool can_resize);
 
+/*!
+ * @brief Combines the contents of `src` onto the end of `dst`, optionally disposing of `src`
+ * @param dst The destination buffer `src` will merge with
+ * @param src The source buffer that will merge into `dst`
+ * @param can_resize When true, the `dst` buffer will resize if more room is needed
+ * @param consume_src When true, the `src` buffer will be disposed of after being merged into `dst`
+ * @return `MCF_OK` on success and the error code when something fails
+ */
 mcfErrorType _mcf_data_buffer_extend(_mcfDataBuffer* _MCF_RESTRICT const dst, _mcfDataBuffer* _MCF_RESTRICT const src, mcfBool can_resize, mcfBool consume_src);
 
 /*!
@@ -173,4 +181,4 @@ _mcfDataBuffer _mcf_file_read(const char* file_path);
  * @param file_path The system path of the file
  * @return `MCF_OK` on success and the error code when something fails
  */
-mcfErrorType _mcf_file_write(_mcfDataBuffer* const buffer, const char* file_path);
+mcfErrorType _mcf_file_write(_mcfDataBuffer buffer, const char* file_path);
