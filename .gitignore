@@ -1,7 +1,6 @@
 
-# GCC build directories
-bin/
-obj/
+# CMake build directories
+build/
 
 # Blender python cache
 __pycache__/

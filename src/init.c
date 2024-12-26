@@ -9,12 +9,15 @@
 #define _MCF_FILEID(x) ((uint32_t)(x[0]|(x[1]<<8)|(x[2]<<16)|(x[3]<<24)))
 
 static void* _default_malloc(size_t size, void* user) {
+	_MCF_UNUSED_PARAM(user);
 	return malloc(size);
 }
 static void* _default_realloc(void* mem, size_t new_size, void* user) {
+	_MCF_UNUSED_PARAM(user);
 	return realloc(mem, new_size);
 }
 static void _default_dealloc(void* mem, void* user) {
+	_MCF_UNUSED_PARAM(user);
 	return free(mem);
 }
 
@@ -32,6 +35,7 @@ mcfAllocator _mcf_allocator = {
 };
 
 void _mcf_log(const char* func, const char* format, ...) {
+	_MCF_UNUSED_PARAM(func);
 	//TODO: Update this function to use stack buffers instead of stdout,
 	//so users can override how logging works, or stop logging all together.
 	va_list args;

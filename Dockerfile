@@ -1,26 +1,23 @@
-FROM ubuntu:latest AS base
-
+FROM ubuntu:latest AS mcf-devel
+ARG WATCHEXEC_TARGET="https://github.com/watchexec/watchexec/releases/download/v2.1.2/watchexec-2.1.2-x86_64-unknown-linux-gnu.deb"
 RUN apt-get update \
     && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-install-recommends \
-    git wget ca-certificates gcc libc6-dev gdb make
+        gcc make cmake git wget ca-certificates libc6-dev \
+    && wget -O /tmp/watchexec.deb ${WATCHEXEC_TARGET} && dpkg -i /tmp/watchexec.deb \
+    && rm /tmp/watchexec.deb \
+    && mkdir -p /home/ubuntu/build \
+    && chown ubuntu:ubuntu -R /home/ubuntu
 
-# == COMPILE WATCHEXEC FOR UBUNTU ==
-FROM base AS build-watchexec
-ARG WATCHEXEC_TARGET="https://github.com/watchexec/watchexec/releases/download/v2.1.2/watchexec-2.1.2-x86_64-unknown-linux-gnu.deb"
-RUN wget -O /tmp/watchexec.deb ${WATCHEXEC_TARGET} && dpkg -i /tmp/watchexec.deb
-
-# == WATCHEXEC BINARY IMAGE DATA ==
-FROM scratch AS watchexec-ubuntu
-COPY --from=build-watchexec /usr/share/bash-completion/completions/watchexec /usr/share/bash-completion/completions/watchexec
-COPY --from=build-watchexec /usr/share/zsh/site-functions/_watchexec /usr/share/zsh/site-functions/_watchexec
-COPY --from=build-watchexec /usr/share/fish/vendor_completions.d/watchexec.fish /usr/share/fish/vendor_completions.d/watchexec.fish
-COPY --from=build-watchexec /usr/share/man/man1/watchexec.1.gz /usr/share/man/man1/watchexec.1.gz
-COPY --from=build-watchexec /usr/share/doc/watchexec/watchexec.1.md /usr/share/doc/watchexec/watchexec.1.md
-COPY --from=build-watchexec /usr/bin/watchexec /usr/bin/watchexec
-
-FROM base AS devel
-COPY --from=watchexec-ubuntu . .
-RUN chown ubuntu:ubuntu -R /home/ubuntu
 WORKDIR /home/ubuntu
 USER ubuntu
-CMD ["watchexec", "-w", "src", "-w", "include", "-w", "Makefile", "make", "debug", "-j$(nproc)"]
+CMD cmake -S . -B build/ -D CMAKE_BUILD_TYPE=Debug \
+    && watchexec -w src -w include cmake --build build/ -j$(nproc)
+
+FROM ubuntu:latest AS mcf-release
+RUN apt-get update \
+    && DEBIAN_FRONTEND=nointeractive apt-get install -y --no-install-recommends \
+        gcc make cmake libc6-dev libc6
+WORKDIR /mcf
+COPY . .
+RUN cmake -S . -B build/ -D CMAKE_BUILD_TYPE=Release \
+    && cmake --build build/ -j$(nproc)

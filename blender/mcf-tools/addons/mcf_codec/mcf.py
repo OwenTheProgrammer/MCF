@@ -50,7 +50,7 @@ class McfHeader:
 		self.uid = uid
 		self.block_count = block_count
 		self.block_offsets = block_offsets
-	
+
 	@classmethod
 	def from_binary(self, stream):
 		# Load the first 4 u32 values
@@ -59,7 +59,7 @@ class McfHeader:
 		# Fail if this isnt an MCF file
 		if fid != MCF_FILE_ID:
 			raise Exception("File ID is invalid")
-		
+
 		# Read the block_offset table
 		preamble_size = struct.calcsize('<4L')
 		offsets = struct.unpack_from(f"<{count}L", stream, preamble_size)
@@ -69,7 +69,7 @@ class McfHeader:
 		offsets = [x + header_size for x in offsets]
 
 		return McfHeader(fid, version, uid, count, offsets)
-	
+
 	def serialize(self):
 		buffer = bytearray( struct.pack('<4L', self.file_id, self.file_version, self.uid, self.block_count) )
 		offsets = np.array(self.block_offsets, dtype=np.uint32).flatten()
@@ -96,11 +96,11 @@ class McfBlock:
 
 		if cmp_type >= McfComponentType.MAX:
 			raise Exception(f"Component type {cmp_type} is invalid")
-		
+
 		preamble_size = struct.calcsize('<4L')
 		buffer_data = struct.unpack_from(f"<{elem_count*cmp_count}{McfComponentTypeCodeTable[cmp_type]}", stream, preamble_size)
 		return McfBlock(block_type, elem_count, cmp_count, cmp_type, buffer_data)
-	
+
 	@classmethod
 	def create_vertex_block(self, obj):
 
@@ -108,13 +108,13 @@ class McfBlock:
 		vpos = np.array(vpos, dtype=np.float32).flatten()
 
 		return McfBlock(
-			type=McfBlockType.VERTEX, 
-			elem_count=vpos.size/3, 
+			type=McfBlockType.VERTEX,
+			elem_count=vpos.size/3,
 			component_count=3,
 			component_type=McfComponentType.FLOAT,
 			data=vpos
 		)
-	
+
 	@classmethod
 	def create_index_block(self, obj):
 		mesh = obj.data
@@ -135,10 +135,10 @@ class McfBlock:
 	def serialize(self, eopt):
 		if not eopt:
 			return None
-		
+
 		buffer = bytearray( struct.pack('<4L', int(self.type), int(self.element_count), int(self.component_count), int(self.component_type)) )
 		buffer.extend( bytes(memoryview(self.data)) )
-		
+
 		print(f"MCF: Encoded block {self.type} ({len(buffer)} Bytes)")
 		return buffer
 
@@ -159,33 +159,33 @@ class McfModel:
 					self.vertex_block = block
 				case McfBlockType.INDEX if self.index_block == None:
 					self.index_block = block
-	
+
 	def compose_vertex_buffer(self):
 		if self.vertex_block == None:
 			return None
-		
+
 		block = self.vertex_block
 		data = np.array(block.data, dtype=np.float32)
-		
+
 		# Add zero padding to ensure whatever stride will become all vector3
 		padded = np.pad(data, (0, stride_padding(data.size, block.component_count)))
 		padded = padded.reshape((-1, block.component_count))
 		final = np.pad(padded, [(0,0),(0, (3 - block.component_count))])
 
 		return final.tolist()
-	
+
 	def compose_index_buffer(self):
 		if self.index_block == None:
 			return None
-		
+
 		block = self.index_block
 		data = np.array(block.data, dtype=np.uint32)
 
 		if data.size % 3 != 0:
 			raise Exception(f"Invalid index buffer size of {data.size} indices")
-		
+
 		index_buffer = data.reshape((-1, 3))
-		
+
 		return index_buffer.tolist()
 
 	def create_mesh(self, context, vertex_buffer, index_buffer):
@@ -208,11 +208,13 @@ class McfModel:
 		# Recalculate the internal index buffer
 		bm.verts.ensure_lookup_table()
 
-		for t in index_buffer:
-			triangle = (bm.verts[t[0]], bm.verts[t[1]], bm.verts[t[2]])
-			bm.faces.new(triangle)
-		
-		bm.faces.ensure_lookup_table()
+		if index_buffer != None:
+			for t in index_buffer:
+				print(t)
+				triangle = (bm.verts[t[0]], bm.verts[t[1]], bm.verts[t[2]])
+				bm.faces.new(triangle)
+
+			bm.faces.ensure_lookup_table()
 
 		bm.to_mesh(mesh)
 		bm.free()

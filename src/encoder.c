@@ -1,4 +1,4 @@
-#include <MCF/core.h>
+#include <mcf/core.h>
 #include "internal.h"
 #include "model.h"
 #include "footprint.h"
@@ -48,7 +48,7 @@
 
 static _mcfDataBuffer _mcf_encode_header(_mcfHeader header) {
 	MCF_LOG("Encoding header");
-	
+
 	ENCODE_BEGIN(_mcf_get_header_footprint(header))
 
 	ENCODE_PARAM(header.file_id)
@@ -89,7 +89,7 @@ static _mcfDataBuffer _mcf_encode_model(_mcfModel model) {
 	//Encode the header data from the finished blocks and prepend it to encode_buffer
 	_mcfDataBuffer final_buffer = _mcf_encode_header(model.header);
 	_mcf_data_buffer_extend(&final_buffer, &encode_buffer, MCF_TRUE, MCF_TRUE);
-	
+
 	return final_buffer;
 }
 
@@ -104,7 +104,7 @@ MCFAPI mcfErrorType mcf_export_model(mcfModel* const model, const char* file_pat
 	_mcfDataBuffer model_enc = _mcf_encode_model(_model);
 
 	mcfErrorType _err = _mcf_file_write(model_enc, file_path);
-	
+
 	_mcf_free_data_buffer(&model_enc);
 
 	return _err;

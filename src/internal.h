@@ -1,11 +1,12 @@
 #pragma once
-#include <MCF/core.h>
+#include <mcf/core.h>
 #include <stdint.h>
 #include <stddef.h>
 
 #define _MCF_LOG_SIZE 1024
 #define _MCF_RESTRICT __restrict__
 #define _MCF_TYPEOF(x) typeof(x)
+#define _MCF_UNUSED_PARAM(x) (void)x;
 
 /* File magic/identifier code */
 extern const uint32_t _MCF_FILE_ID;

@@ -1,4 +1,4 @@
-#include <MCF/core.h>
+#include <mcf/core.h>
 #include "internal.h"
 #include <stdint.h>
 #include <stddef.h>

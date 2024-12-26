@@ -4,12 +4,7 @@ services:
     container_name: 'mcf-dev'
     build:
       context: .
-      target: devel
+      target: mcf-devel
       pull: false
     volumes:
       - .:/home/ubuntu
-      - ./include:/home/ubuntu/include:ro
-      - ./src:/home/ubuntu/src:ro
-      - ./docker-compose.yml:/home/ubuntu/docker-compose.yml:ro
-      - ./Dockerfile:/home/ubuntu/Dockerfile:ro
-      - ./Makefile:/home/ubuntu/Makefile:ro
